@@ -1,0 +1,190 @@
+<div class="content-wrapper">
+      <button class="add-btn" (click)="openAddModal()">Add Permission</button>
+
+      <div class="table-container">
+        <h2 class="table-title">Permission List</h2>
+
+        <div class="table-controls">
+          <div class="table-info">
+            <span>Show</span>
+            <select [(ngModel)]="entriesPerPage" class="entries-select">
+              <option [value]="100">100</option>
+              <option [value]="50">50</option>
+              <option [value]="25">25</option>
+            </select>
+            <span>entries</span>
+          </div>
+
+          <div class="table-actions">
+            <button class="control-btn delete-btn" 
+                    [disabled]="!hasSelected()"
+                    (click)="bulkDelete()">
+              Delete selected
+            </button>
+          </div>
+        </div>
+
+        <div class="search-container">
+          <label>Search:</label>
+          <input type="search" [(ngModel)]="searchTerm" placeholder="Search permissions..." class="search-input">
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th><input type="checkbox" (change)="toggleAll($event)" [checked]="allSelected()"></th>
+              <th>ID ↕</th>
+              <th>Title ↕</th>
+              <th>Description ↕</th>
+              <th>Created At ↕</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let permission of filteredPermissions()">
+              <td><input type="checkbox" [(ngModel)]="permission.selected"></td>
+              <td>{{ permission.id }}</td>
+              <td>{{ permission.title }}</td>
+              <td>{{ permission.description }}</td>
+              <td>{{ permission.createdAt }}</td>
+              <td class="actions-cell">
+                <button class="action-btn view-btn" (click)="openViewModal(permission)">View</button>
+                <button class="action-btn edit-btn" (click)="openEditModal(permission)">Edit</button>
+                <button class="action-btn delete-btn" (click)="openDeleteModal(permission)">Delete</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="table-footer">
+          <span class="showing-text">Showing 1 to {{ permissions.length }} of {{ permissions.length }} entries</span>
+          <div class="pagination">
+            <button class="page-btn" disabled>Previous</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn" disabled>Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD PERMISSION MODAL -->
+    <div class="modal-overlay" *ngIf="showAddModal" (click)="closeAddModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Add New Permission</h2>
+          <button class="close-btn" (click)="closeAddModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-subtitle">Create a new permission for the system</p>
+          
+          <div class="form-group">
+            <label>Permission Title</label>
+            <input 
+              type="text" 
+              [(ngModel)]="newPermission.title" 
+              placeholder="e.g., users_manage"
+              class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea 
+              [(ngModel)]="newPermission.description" 
+              placeholder="Describe what this permission allows"
+              class="form-textarea"
+              rows="4"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="closeAddModal()">Cancel</button>
+          <button class="btn-submit" (click)="addPermission()">Add Permission</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW PERMISSION MODAL -->
+    <div class="modal-overlay" *ngIf="showViewModal" (click)="closeViewModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Permission Details</h2>
+          <button class="close-btn" (click)="closeViewModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-subtitle">View permission information</p>
+          
+          <div class="detail-item">
+            <label>ID</label>
+            <p>{{ selectedPermission?.id }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Title</label>
+            <p>{{ selectedPermission?.title }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Description</label>
+            <p>{{ selectedPermission?.description }}</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Created At</label>
+            <p>{{ selectedPermission?.createdAt }}</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="closeViewModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDIT PERMISSION MODAL -->
+    <div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Edit Permission</h2>
+          <button class="close-btn" (click)="closeEditModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-subtitle">Update permission information</p>
+          
+          <div class="form-group">
+            <label>Permission Title</label>
+            <input 
+              type="text" 
+              [(ngModel)]="editPermission.title" 
+              class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea 
+              [(ngModel)]="editPermission.description" 
+              class="form-textarea"
+              rows="4"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="closeEditModal()">Cancel</button>
+          <button class="btn-submit" (click)="updatePermission()">Update Permission</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DELETE CONFIRMATION MODAL -->
+    <div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+      <div class="modal modal-small" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Are you sure?</h2>
+          <button class="close-btn" (click)="closeDeleteModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <p>Once you delete the permission <strong>{{ selectedPermission?.title }}</strong>, this action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="closeDeleteModal()">Cancel</button>
+          <button class="btn-delete" (click)="confirmDelete()">Delete</button>
+        </div>
+      </div>
+    </div>
+  

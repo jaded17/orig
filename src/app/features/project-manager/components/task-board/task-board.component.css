@@ -1,0 +1,166 @@
+.task-board {
+  padding: 30px;
+  background-color: #1a1d29;
+  min-height: 100vh;
+  color: #ffffff;
+}
+
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.breadcrumb {
+  font-size: 12px;
+  color: #8b8d98;
+  margin-bottom: 10px;
+}
+
+.board-header h1 {
+  font-size: 28px;
+  margin: 0 0 8px 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #8b8d98;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: #8b8d98;
+  border: 1px solid #2d3142;
+}
+
+.board-container {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  color: #000000;
+}
+
+.board-container h2 {
+  font-size: 24px;
+  margin: 0 0 5px 0;
+}
+
+.board-subtitle {
+  color: #666;
+  margin: 0 0 10px 0;
+}
+
+.no-add-task {
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.columns-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.column {
+  background-color: #f9fafb;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.column-header h3 {
+  font-size: 14px;
+  margin: 0;
+}
+
+.task-count {
+  background-color: #e5e7eb;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.task-card {
+  background-color: white;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.task-card h4 {
+  font-size: 14px;
+  margin: 0 0 8px 0;
+}
+
+.task-card p {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 12px 0;
+}
+
+.task-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.badge-high {
+  background-color: #dc2626;
+  color: white;
+}
+
+.badge-medium {
+  background-color: #000000;
+  color: white;
+}
+
+.assignees {
+  display: flex;
+  gap: 5px;
+}
+
+.assignee {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+}

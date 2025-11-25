@@ -1,0 +1,37 @@
+<!--PM-->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h2>Members</h2>
+    <p>Mike Johnson</p>
+  </div>
+  
+  <nav class="sidebar-nav">
+    <a *ngFor="let item of menuItems" 
+       [routerLink]="item.route"
+       class="nav-item"
+       routerLinkActive="active">
+      <span class="nav-icon">{{item.icon}}</span>
+      <span class="nav-label">{{item.label}}</span>
+    </a>
+  </nav>
+ 
+</div>
+
+<!--member-->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <h2>Members</h2>
+    <p>Mike Johnson</p>
+  </div>
+  
+  <nav class="sidebar-nav">
+    <a *ngFor="let item of menuItems" 
+       [routerLink]="item.route"
+       class="nav-item"
+       routerLinkActive="active">
+      <span class="nav-icon">{{item.icon}}</span>
+      <span class="nav-label">{{item.label}}</span>
+    </a>
+  </nav>
+ 
+</div>

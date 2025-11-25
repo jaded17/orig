@@ -1,0 +1,127 @@
+<div class="expenses">
+
+  <header class="page-header">
+    <div class="header-left">
+      <p class="breadcrumb">Logged in as: <strong>{{ loggedInUser }} • {{ loggedInRole }}</strong></p>
+      <h1>Receipt Approval</h1>
+      <p class="subtitle">Review and approve expense receipts submitted by team members</p>
+    </div>
+    <div class="header-right">
+      <div class="user-badge">
+        <span class="user-icon">👤</span>
+        <span class="user-name">{{ loggedInUser }}</span>
+        <span class="role-badge">PM</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="content-wrapper">
+    
+    <div *ngIf="isLoading" class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Loading receipts...</p>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-banner">
+      <span class="error-icon">⚠️</span>
+      <span>{{ errorMessage }}</span>
+      <button class="error-close" (click)="errorMessage = ''">✕</button>
+    </div>
+    
+    <div class="summary-cards">
+      <div class="summary-card">
+        <div class="card-icon blue">💲</div>
+        <div class="card-content">
+          <p class="card-label">Total Expenses</p>
+          <h2 class="card-value">${{ totalExpenses.toFixed(2) }}</h2>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="card-icon green">✓</div>
+        <div class="card-content">
+          <p class="card-label">Approved</p>
+          <h2 class="card-value">${{ approvedExpenses.toFixed(2) }}</h2>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="card-icon yellow">⏱</div>
+        <div class="card-content">
+          <p class="card-label">Pending</p>
+          <h2 class="card-value">${{ pendingExpenses.toFixed(2) }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="receipts-table-container full-width-table">
+        <div class="receipts-header">
+          <h3>Submitted Receipts</h3>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="receipts-table">
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Submitted By</th>
+                <th>Date</th>
+                <th>Receipt</th>
+                <th>Status</th>
+                <th>Actions</th> </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of history">
+                <td class="desc-cell">{{ item.action }}</td>
+                <td class="amount-cell">${{ item.amount.toFixed(2) }}</td>
+                <td class="submitter-cell">
+                  <div class="submitter-info">
+                    <div class="avatar" [ngClass]="getAvatarClass(item.submittedBy)">
+                      {{ getInitials(item.submittedBy) }}
+                    </div>
+                    <span>{{ item.submittedBy }}</span>
+                  </div>
+                </td>
+                <td class="date-cell">{{ item.date }}</td>
+                <td class="receipt-cell">
+                  <a href="javascript:void(0)" 
+                      class="receipt-link" 
+                      *ngIf="item.file"
+                      (click)="downloadReceipt(item)">
+                    📄 View
+                  </a>
+                  <span *ngIf="!item.file" class="no-receipt">—</span>
+                </td>
+                <td class="status-cell">
+                  <span class="badge-status" [ngClass]="getBadgeClass(item.status)">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="actions-cell">
+                  <div *ngIf="item.status === 'Pending'" class="action-buttons">
+                    <button class="btn-action btn-approve" 
+                            (click)="updateReceiptStatus(item, 'Approved')"
+                            [disabled]="isProcessing">
+                      Approve
+                    </button>
+                    <button class="btn-action btn-reject" 
+                            (click)="updateReceiptStatus(item, 'Rejected')"
+                            [disabled]="isProcessing">
+                      Reject
+                    </button>
+                  </div>
+                  <span *ngIf="item.status !== 'Pending'" class="action-placeholder">—</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div *ngIf="!history || history.length === 0" class="empty-state">
+            <p>No receipts submitted yet</p>
+          </div>
+        </div>
+    </div>
+
+  </div>
+</div>

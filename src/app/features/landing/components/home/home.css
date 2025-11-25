@@ -1,0 +1,250 @@
+/* app.css */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: #f8f9fa;
+    color: #2c3e50;
+}
+
+/* Navigation */
+.navbar {
+    background: #2c3e50;
+    padding: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 600;
+    color: #3498db;
+}
+
+.btn-login {
+    background: transparent;
+    border: 2px solid #3498db;
+    color: #3498db;
+    padding: 10px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.btn-login:hover {
+    background: #3498db;
+    color: #fff;
+}
+
+/* Hero Section */
+.hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 30px 80px;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 56px;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.hero p {
+    font-size: 20px;
+    color: #7f8c8d;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: #fff;
+    border: none;
+    padding: 16px 40px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: #2c3e50;
+    border: 2px solid #2c3e50;
+    padding: 16px 40px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    background: #2c3e50;
+    color: #fff;
+}
+
+/* Features Section */
+.features {
+    max-width: 1200px;
+    margin: 60px auto;
+    padding: 0 30px;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 60px;
+}
+
+.feature-card {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.feature-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.feature-card h3 {
+    font-size: 20px;
+    color: #2c3e50;
+    margin-bottom: 12px;
+}
+
+.feature-card p {
+    color: #7f8c8d;
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+/* Stats Section */
+.stats {
+    background: #2c3e50;
+    padding: 60px 30px;
+    margin: 80px 0;
+}
+
+.stats-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    text-align: center;
+}
+
+.stat-item h2 {
+    font-size: 48px;
+    color: #3498db;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.stat-item p {
+    color: #bdc3c7;
+    font-size: 16px;
+}
+
+/* Footer */
+.footer {
+    background: #2c3e50;
+    color: #ecf0f1;
+    padding: 40px 30px;
+    text-align: center;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: #bdc3c7;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: #3498db;
+}
+
+.copyright {
+    color: #7f8c8d;
+    margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 36px;
+    }
+
+    .hero p {
+        font-size: 18px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        max-width: 300px;
+    }
+}

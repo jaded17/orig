@@ -1,0 +1,155 @@
+<div class="team-management" (click)="closeMenu()">
+  <!-- Header -->
+  <header class="header">
+    <h1 class="page-title">{{ labels.pageTitle }}</h1>
+   <!-- <button class="btn-add" (click)="addTeamMember()" aria-label="Add new team member">
+      <span class="plus" aria-hidden="true">+</span>
+      {{ labels.addMember }}
+    </button>-->
+  </header>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>{{ labels.messages.loading }}</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="error && !isLoading">
+    <p class="error-message">{{ error }}</p>
+    <button class="btn-retry" (click)="loadMembers()">{{ labels.messages.retry }}</button>
+  </div>
+
+  <!-- Content -->
+  <ng-container *ngIf="!isLoading && !error">
+    <!-- Stats Cards -->
+    <section class="stats-section" aria-label="Team statistics">
+      <div class="stats-grid">
+        <article class="stat-card stat-card--blue">
+          <span class="stat-label">{{ labels.stats.totalMembers }}</span>
+          <span class="stat-value">{{ stats.totalMembers }}</span>
+        </article>
+        <article class="stat-card stat-card--green">
+          <span class="stat-label">{{ labels.stats.active }}</span>
+          <span class="stat-value">{{ stats.active }}</span>
+        </article>
+        <article class="stat-card stat-card--yellow">
+          <span class="stat-label">{{ labels.stats.onLeave }}</span>
+          <span class="stat-value">{{ stats.onLeave }}</span>
+        </article>
+        <article class="stat-card stat-card--purple">
+          <span class="stat-label">{{ labels.stats.totalTasks }}</span>
+          <span class="stat-value">{{ stats.totalTasks }}</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="members.length === 0">
+      <p>{{ labels.messages.noMembers }}</p>
+      <button class="btn-add" (click)="addTeamMember()">
+        <span class="plus">+</span> {{ labels.addMember }}
+      </button>
+    </div>
+
+    <!-- Members Grid -->
+    <section class="members-section" aria-label="Team members list" *ngIf="members.length > 0">
+      <div class="members-grid">
+        <article class="member-card" *ngFor="let member of members; trackBy: trackByMemberId">
+          <!-- Card Header -->
+          <div class="member-header">
+            <div class="member-info">
+              <div class="avatar" [attr.aria-label]="member.name + ' avatar'">
+                {{ getInitials(member.name) }}
+              </div>
+              <div class="member-details">
+                <h3 class="member-name">{{ member.name }}</h3>
+                <p class="member-role">{{ member.role }}</p>
+              </div>
+            </div>
+
+
+            
+            <!--here-->
+            <div class="member-actions">
+              <span class="status-badge" [ngClass]="getStatusClass(member.status)">
+                {{ getStatusLabel(member.status) }}
+              </span>
+              <div class="menu-container">
+                <button class="menu-btn" 
+                        (click)="toggleMenu(member.id, $event)"
+                        [attr.aria-expanded]="isMenuOpen(member.id)"
+                        aria-haspopup="true"
+                        aria-label="Member actions menu">
+                  
+                </button>
+
+                <!-- Dropdown Menu -->
+                 <!-- remove this  -->
+                <div class="dropdown-menu" *ngIf="isMenuOpen(member.id)" role="menu">
+                  <button class="dropdown-item" (click)="viewProfile(member)" role="menuitem">
+                    <span class="dropdown-icon">👤</span>
+                    {{ labels.actions.viewProfile }}
+                  </button>
+                  <button class="dropdown-item" (click)="editMember(member)" role="menuitem">
+                    <span class="dropdown-icon">✏️</span>
+                    {{ labels.actions.edit }}
+                  </button>
+                  <button class="dropdown-item" (click)="assignTask(member)" role="menuitem">
+                    <span class="dropdown-icon">📋</span>
+                    {{ labels.actions.assignTask }}
+                  </button>
+                  <hr class="dropdown-divider">
+                  <button class="dropdown-item dropdown-item--danger" (click)="removeMember(member)" role="menuitem">
+                    <span class="dropdown-icon">🗑️</span>
+                    {{ labels.actions.remove }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--up to here
+          -->
+          <!-- Contact Info -->
+          <div class="member-contact">
+            <div class="contact-item">
+              <span class="contact-icon" aria-hidden="true">✉</span>
+              <span class="contact-label">{{ labels.member.email }}:</span>
+              <a class="contact-value" [href]="'mailto:' + member.email">{{ member.email }}</a>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon" aria-hidden="true">📞</span>
+              <span class="contact-label">{{ labels.member.phone }}:</span>
+              <a class="contact-value" [href]="'tel:' + member.phone">{{ member.phone }}</a>
+            </div>
+          </div>
+
+          <!-- Member Stats -->
+          <div class="member-stats">
+            <div class="member-stat">
+              <span class="member-stat-label">{{ labels.member.projects }}</span>
+              <span class="member-stat-value">{{ member.projects }}</span>
+            </div>
+            <div class="member-stat">
+              <span class="member-stat-label">{{ labels.member.tasks }}</span>
+              <span class="member-stat-value">{{ member.tasks }}</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </ng-container>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-titles">
+          <h2 class="modal-title">{{ isEditMode ? labels.modal.editTitle : labels.modal.addTitle }}</h2>
+          <p class="modal-subtitle">{{ isEditMode ? labels.modal.editSubtitle : labels.modal.subtitle }}</p>
+        </div>
+        <button class="modal-close" (click)="closeModal()" aria-label="Close modal">&times;</button>
+      </div>
+
+    

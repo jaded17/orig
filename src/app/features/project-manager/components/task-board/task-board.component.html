@@ -1,0 +1,42 @@
+<div class="task-board">
+  <header class="board-header">
+    <div>
+      <p class="breadcrumb">Logged In as <strong>Mark Johnson - Team Member</strong></p>
+      <h1>Task Management</h1>
+      <p class="subtitle">Manage your team's tasks and project tasks</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-secondary">+ Kanban Board</button>
+      <button class="btn-primary">Gantt Chart</button>
+    </div>
+  </header>
+
+  <div class="board-container">
+    <h2>Task Board</h2>
+    <p class="board-subtitle">Manage and track all project tasks</p>
+    <p class="no-add-task">no add task button</p>
+
+    <div class="columns-container">
+      <div *ngFor="let column of columns" class="column">
+        <div class="column-header">
+          <h3>{{column.title}}</h3>
+          <span class="task-count">{{column.count}}</span>
+        </div>
+
+        <div class="task-card" *ngFor="let task of column.tasks">
+          <h4>{{task.title}}</h4>
+          <p *ngIf="task.description">{{task.description}}</p>
+          <div class="task-footer">
+            <span class="badge" [class.badge-high]="task.priority === 'High'" 
+                  [class.badge-medium]="task.priority === 'Medium'">
+              {{task.priority}}
+            </span>
+            <div class="assignees">
+              <span *ngFor="let assignee of task.assignees" class="assignee">{{assignee}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

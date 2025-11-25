@@ -1,0 +1,172 @@
+
+<div class="project-management">
+  <header class="page-header">
+    <div>
+     
+      <h1>Member Dashboard</h1>
+      <p class="subtitle" *ngIf="viewMode === 'kanban'">Monitor progress using the Kanban board and Gantt chart</p>
+      <p class="subtitle" *ngIf="viewMode === 'gantt'">Monitor and organize all the projects' activity and Gantt chart</p>
+    </div>
+    <div class="header-actions">
+      <span class="user-info">
+        <span class="user-icon">👤</span>
+        <span class="user-name">John Johnson</span>
+        <span class="user-badge">PM</span>
+      </span>
+    </div>
+  </header>
+
+  <!-- View Toggle Buttons -->
+  <div class="view-toggle">
+    <button 
+      class="toggle-btn" 
+      [class.active]="viewMode === 'kanban'"
+      (click)="switchView('kanban')">
+      <span class="btn-icon">▦</span>
+      Kanban Board
+    </button>
+    <button 
+      class="toggle-btn" 
+      [class.active]="viewMode === 'gantt'"
+      (click)="switchView('gantt')">
+      <span class="btn-icon">📊</span>
+      Gantt Chart
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner">Loading...</div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-banner">
+    <p>{{ error }}</p>
+    <button (click)="refreshData()">Retry</button>
+  </div>
+
+  <!-- KANBAN BOARD VIEW -->
+  <div class="board-container" *ngIf="viewMode === 'kanban' && !isLoading">
+    <div class="board-header">
+      <div>
+        <h2>Task Board</h2>
+        <p class="board-subtitle">Manage and track all project tasks</p>
+      </div>
+     <!-- <button class="btn-add-task" (click)="openAddTaskModal()">+ Add New Task</button> -->
+    </div>
+
+    <div class="kanban-columns">
+      <div class="kanban-column" *ngFor="let column of taskColumns">
+        <div class="column-header">
+          <h3>{{ column.title }}</h3>
+          <span class="task-count">{{ column.count }}</span>
+        </div>
+
+        <div class="tasks-list">
+          <div class="task-card" *ngFor="let task of column.tasks">
+            <div class="task-header">
+              <h4>{{ task.title }}</h4>
+              <button class="task-delete" (click)="deleteTask(task.id)">×</button>
+            </div>
+            <p class="task-description" *ngIf="task.description">{{ task.description }}</p>
+            
+            <div class="task-footer">
+              <span class="task-priority" [ngClass]="getPriorityClass(task.priority)">
+                {{ task.priority }}
+              </span>
+              <div class="task-assignees" *ngIf="task.assignees && task.assignees.length > 0">
+                <span class="assignee" *ngFor="let assignee of task.assignees">{{ assignee }}</span>
+              </div>
+            </div>
+
+            <!-- Status change dropdown -->
+            <div class="task-actions">
+              <select class="status-select" [value]="task.status" (change)="updateTaskStatus(task.id, $any($event.target).value)">
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="In Review">In Review</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Empty column state -->
+          <div class="empty-column" *ngIf="column.tasks.length === 0">
+            <p>No tasks</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GANTT CHART VIEW -->
+  <div class="content-container" *ngIf="viewMode === 'gantt' && !isLoading">
+    <div class="content-header">
+      <h2>Project Timeline (Gantt Chart)</h2>
+      <div class="filters">
+        <select class="filter-select" (change)="onDueFilterChange($event)">
+          <option>Due</option>
+          <option>Start Date</option>
+          <option>Created Date</option>
+        </select>
+        <select class="filter-select" (change)="onStatusFilterChange($event)">
+          <option *ngFor="let option of statusOptions">{{option}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="timeline-container">
+      <div class="timeline-header">
+        <div class="project-column">Project Name / Client</div>
+        <div class="months-grid">
+          <div class="month">Jan 2025</div>
+          <div class="month">Feb 2025</div>
+          <div class="month">Mar 2025</div>
+          <div class="month">Apr 2025</div>
+        </div>
+      </div>
+
+      <div class="project-row" *ngFor="let project of filteredProjects">
+        <div class="project-info">
+          <div class="project-details">
+            <h4>{{project.name}}</h4>
+            <p class="project-meta">{{project.client || 'Client'}} • {{project.status}}</p>
+            <div class="tags" *ngIf="project.tags && project.tags.length > 0">
+              <span class="tag" *ngFor="let tag of project.tags">{{tag}}</span>
+            </div>
+          </div>
+          <div class="progress-summary">
+            <span class="progress-percent">{{project.progress}}%</span>
+            <span class="status-badge" [ngClass]="getStatusClass(project.status)">{{project.status}}</span>
+          </div>
+        </div>
+        <div class="timeline-grid">
+          <div class="timeline-bar" 
+               [ngClass]="getStatusClass(project.status)"
+               [style.width.%]="project.progress">
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="filteredProjects.length === 0" class="empty-state">
+        <p>No projects found</p>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <span class="dot status-todo"></span> To Do
+      </div>
+      <div class="legend-item">
+        <span class="dot status-progress"></span> In Progress
+      </div>
+      <div class="legend-item">
+        <span class="dot status-review"></span> In Review
+      </div>
+      <div class="legend-item">
+        <span class="dot status-completed"></span> Completed
+      </div>
+    </div>
+  </div>
+</div>
+
