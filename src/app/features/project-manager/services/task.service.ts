@@ -4,9 +4,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { ApiService } from './api.service';
+import { ApiService } from '../../../core/services/api.service';
 import { Task } from '../models/task.model';
-import { ApiResponse } from '../models/api-response.model';
+import { ApiResponse } from '../../../core/models/api-response.model';
+
 
 @Injectable({
   providedIn: 'root'

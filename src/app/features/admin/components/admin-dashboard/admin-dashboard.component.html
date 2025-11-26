@@ -1,72 +1,90 @@
- 
- <div class="content-wrapper">
-      <div class="page-header">
-        <h1>Dashboard</h1>
-      </div>
-      
-      <p class="welcome-text">Welcome back! Here's an overview of your system.</p>
+<div class="content-wrapper">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading dashboard...</p>
+  </div>
 
-      <div class="stats-grid">
-        <div class="stat-card blue">
-          <div class="stat-header">
-            <span class="stat-title">Total Users</span>
-            <span class="stat-icon">👥</span>
-          </div>
-          <div class="stat-value">{{ stats.totalUsers || 0 }}</div>
-          <div class="stat-change">{{ stats.userGrowth || 'Loading...' }}</div>
-        </div>
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading">
+    <div class="page-header">
+      <h1>Dashboard</h1>
+    </div>
+    
+    <p class="welcome-text">
+      Welcome back, {{ getUserDisplayName() }}! Here's an overview of your system.
+    </p>
 
-        <div class="stat-card purple">
-          <div class="stat-header">
-            <span class="stat-title">Active Roles</span>
-            <span class="stat-icon">👤</span>
-          </div>
-          <div class="stat-value">{{ stats.activeRoles || 0 }}</div>
-          <div class="stat-change">{{ stats.newRoles || 'Loading...' }}</div>
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="stat-header">
+          <span class="stat-title">Total Users</span>
+          <span class="stat-icon">👥</span>
         </div>
-
-        <div class="stat-card green">
-          <div class="stat-header">
-            <span class="stat-title">Permissions</span>
-            <span class="stat-icon">🛡️</span>
-          </div>
-          <div class="stat-value">{{ stats.permissions || 0 }}</div>
-          <div class="stat-change">{{ stats.permissionsStatus || 'Loading...' }}</div>
-        </div>
-
-        <div class="stat-card orange">
-          <div class="stat-header">
-            <span class="stat-title">Active Sessions</span>
-            <span class="stat-icon">📊</span>
-          </div>
-          <div class="stat-value">{{ stats.activeSessions || 0 }}</div>
-          <div class="stat-change">{{ stats.lastUpdate || 'Loading...' }}</div>
-        </div>
+        <div class="stat-value">{{ stats.totalUsers }}</div>
+        <div class="stat-change">{{ stats.userGrowth || 'No change' }}</div>
       </div>
 
-      <div class="dashboard-grid">
-        <div class="activity-panel">
-          <h2>Recent Activity</h2>
-          <div class="activity-list" *ngIf="recentActivity.length > 0; else noActivity">
-            <div class="activity-item" *ngFor="let activity of recentActivity">
-              <div class="activity-avatar">{{ activity.initial }}</div>
-              <div class="activity-content">
-                <div class="activity-text">{{ activity.text }}</div>
-                <div class="activity-time">{{ activity.time }}</div>
-              </div>
-            </div>
-          </div>
-          <ng-template #noActivity>
-            <p style="color: #7f8c8d; text-align: center;">No recent activity</p>
-          </ng-template>
+      <div class="stat-card purple">
+        <div class="stat-header">
+          <span class="stat-title">Active Roles</span>
+          <span class="stat-icon">👤</span>
         </div>
+        <div class="stat-value">{{ stats.activeRoles }}</div>
+        <div class="stat-change">{{ stats.newRoles || 'No new roles' }}</div>
+      </div>
 
-        <div class="actions-panel">
-          <h2>Quick Actions</h2>
-          <button class="action-btn blue" (click)="addUser()">+ Add New User</button>
-          <button class="action-btn green" (click)="createRole()">+ Create Role</button>
-          <button class="action-btn purple" (click)="addPermission()">+ Add Permission</button>
-          <button class="action-btn orange" (click)="viewLogs()">View System Logs</button>
+      <div class="stat-card green">
+        <div class="stat-header">
+          <span class="stat-title">Permissions</span>
+          <span class="stat-icon">🛡️</span>
         </div>
+        <div class="stat-value">{{ stats.permissions }}</div>
+        <div class="stat-change">{{ stats.permissionsStatus || 'Configured' }}</div>
+      </div>
+
+      <div class="stat-card orange">
+        <div class="stat-header">
+          <span class="stat-title">Active Sessions</span>
+          <span class="stat-icon">📊</span>
+        </div>
+        <div class="stat-value">{{ stats.activeSessions }}</div>
+        <div class="stat-change">{{ stats.lastUpdate || 'No data' }}</div>
       </div>
     </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+      <!-- Recent Activity Panel -->
+      <div class="activity-panel">
+        <h2>Recent Activity</h2>
+        
+        <div class="activity-list" *ngIf="recentActivity.length > 0; else noActivity">
+          <div class="activity-item" *ngFor="let activity of recentActivity">
+            <div class="activity-avatar">{{ activity.initial }}</div>
+            <div class="activity-content">
+              <div class="activity-text">{{ activity.text }}</div>
+              <div class="activity-time">{{ activity.time }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <ng-template #noActivity>
+          <div class="empty-state">
+            <p>No recent activity</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Quick Actions Panel -->
+      <div class="actions-panel">
+        <h2>Quick Actions</h2>
+        <button class="action-btn blue" (click)="addUser()">+ Add New User</button>
+        <button class="action-btn green" (click)="createRole()">+ Create Role</button>
+        <button class="action-btn purple" (click)="addPermission()">+ Add Permission</button>
+        <button class="action-btn orange" (click)="viewLogs()">View System Logs</button>
+      </div>
+    </div>
+  </div>
+</div>

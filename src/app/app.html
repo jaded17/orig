@@ -1,49 +1,114 @@
-<!--admin-->
-<div class="app-container">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="logo">Laravel</div>
-    
+<div class="app-container" [class.no-sidebar]="!showSidebar">
+  
+  <!-- ==================== ADMIN SIDEBAR ==================== -->
+  <aside class="sidebar" *ngIf="showSidebar && userRole === UserRole.ADMIN">
+    <div class="logo">ADMIN</div>
     <nav class="nav-menu">
-      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
-        Dashboard
+      <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="icon">📊</span> Dashboard
       </a>
       
       <div class="nav-group">
         <div class="nav-group-header" (click)="toggleUserManagement()">
-          User management
+          <span class="icon">👥</span> User management
           <span class="toggle-icon">{{ isUserManagementOpen ? '∧' : '∨' }}</span>
         </div>
         
         <div class="nav-submenu" [class.open]="isUserManagementOpen">
-          <a routerLink="/permissions" routerLinkActive="active" class="nav-subitem">
-            Permissions
+          <a routerLink="/admin/permissions" routerLinkActive="active" class="nav-subitem">
+            <span class="icon">🛡️</span> Permissions
           </a>
-          <a routerLink="/roles" routerLinkActive="active" class="nav-subitem">
-            Roles
+          <a routerLink="/admin/roles" routerLinkActive="active" class="nav-subitem">
+            <span class="icon">🎭</span> Roles
           </a>
-          <a routerLink="/users" routerLinkActive="active" class="nav-subitem">
-            Users
+          <a routerLink="/admin/users" routerLinkActive="active" class="nav-subitem">
+            <span class="icon">👤</span> Users
           </a>
         </div>
       </div>
       
-      <a routerLink="/change-password" routerLinkActive="active" class="nav-item">
-        Change password
+      <a routerLink="/shared/change-password" routerLinkActive="active" class="nav-item">
+        <span class="icon">🔑</span> Change password
       </a>
       
       <a href="#" class="nav-item" (click)="logout($event)">
-        Logout
+        <span class="icon">🚪</span> Logout
       </a>
     </nav>
   </aside>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <div class="top-header">Laravel</div>
+  <!-- ==================== PM (PROJECT MANAGER) SIDEBAR ==================== -->
+  <aside class="sidebar" *ngIf="showSidebar && userRole === UserRole.PROJECT_MANAGER">
+    <div class="logo">PM Dashboard</div>
+    <div class="user-info">{{ userName }}</div>
+    
+    <nav class="nav-menu">
+      <a routerLink="/pm/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="icon">🏠</span> Dashboard
+      </a>
+      
+      <a routerLink="/pm/projects" routerLinkActive="active" class="nav-item">
+        <span class="icon">📋</span> Project Management
+      </a>
+      
+      <a routerLink="/pm/team" routerLinkActive="active" class="nav-item">
+        <span class="icon">👥</span> Team Members
+      </a>
+      
+      <a routerLink="/pm/receipts" routerLinkActive="active" class="nav-item">
+        <span class="icon">📄</span> Receipt Approval
+      </a>
+      
+      
+      <a routerLink="/shared/change-password" routerLinkActive="active" class="nav-item">
+        <span class="icon">🔑</span> Change password
+      </a>
+      
+      <a href="#" class="nav-item" (click)="logout($event)">
+        <span class="icon">🚪</span> Logout
+      </a>
+    </nav>
+  </aside>
+
+  <!-- ==================== MEMBER SIDEBAR ==================== -->
+  <aside class="sidebar" *ngIf="showSidebar && userRole === UserRole.MEMBER">
+    <div class="logo">Member Dashboard</div>
+    <div class="user-info">{{ userName }}</div>
+    
+    <nav class="nav-menu">
+      <a routerLink="/member/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="icon">🏠</span> Dashboard
+      </a>
+      
+      <a routerLink="/member/projects" routerLinkActive="active" class="nav-item">
+        <span class="icon">📋</span> Project Management
+      </a>
+      
+      <a routerLink="/member/team" routerLinkActive="active" class="nav-item">
+        <span class="icon">👥</span> Team Members
+      </a>
+      
+      <a routerLink="/member/expenses" routerLinkActive="active" class="nav-item">
+        <span class="icon">💰</span> My Expenses
+      </a>
+      
+      
+      <a routerLink="/shared/change-password" routerLinkActive="active" class="nav-item">
+        <span class="icon">🔑</span> Change password
+      </a>
+      
+      <a href="#" class="nav-item" (click)="logout($event)">
+        <span class="icon">🚪</span> Logout
+      </a>
+    </nav>
+  </aside>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="main-content" [class.full-width]="!showSidebar">
+    <div class="top-header" *ngIf="showSidebar">Project Management System</div>
     <router-outlet></router-outlet>
   </main>
 
   <!-- Help Button -->
-  <button class="help-button">?</button>
+  <button class="help-button" *ngIf="showSidebar">?</button>
 </div>

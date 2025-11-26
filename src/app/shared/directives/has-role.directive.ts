@@ -1,11 +1,12 @@
-import { Directive, Input, TemplateRef, ViewContainerRef, OnInit, OnDestroy } from '@angular/core';
+import { Directive, Input, OnDestroy, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { AuthService } from '../../core/services/auth.service';
+
 import { UserRole } from '../../core/enums/user-role.enum';
+import { AuthService } from '../../core/services/auth.service';
 
 @Directive({
   selector: '[appHasRole]',
-  standalone: false
+  standalone: true
 })
 export class HasRoleDirective implements OnInit, OnDestroy {
   private roles: UserRole[] = [];

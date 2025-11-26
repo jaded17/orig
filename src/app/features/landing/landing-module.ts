@@ -1,11 +1,12 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { LandingRoutingModule } from './landing-routing-module';
-
+import { NgModule } from '@angular/core';
+import { HomeComponent } from './components/home/home';
+import { LandingRoutingModule } from './landing-routing.module';
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    HomeComponent
+  ],
   imports: [
     CommonModule,
     LandingRoutingModule

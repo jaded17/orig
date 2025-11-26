@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+
 import { CommonModule } from '@angular/common';
 
 // --- Interface for Menu Structure ---
@@ -18,8 +19,8 @@ interface FullMenuItem extends MenuItem {
   selector: 'app-sidebar',
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
-  templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.css']
+  templateUrl: './sidebar.html',
+  styleUrls: ['./sidebar.css']
 })
 export class SidebarComponent implements OnInit {
   // This array will hold the final, filtered menu items for the current user

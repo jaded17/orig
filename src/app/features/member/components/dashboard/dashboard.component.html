@@ -1,96 +1,117 @@
 <div class="dashboard">
-  <header class="dashboard-header">
-    <div>
-      <p class="breadcrumb">Logged in as: Mike Johnson • Team Member</p>
-      <h1>Member Dashboard</h1>
-      <p class="subtitle">Welcome back, Mike Johnson! Here's an overview of your tasks.</p>
-    </div>
-    <div class="user-info">
-      <span>👤</span>
-      <span>Mike Johnson</span>
-      <span class="user-badge">Member</span>
-    </div>
-  </header>
-
-  <!-- Stats Grid -->
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-icon blue">📊</div>
-      <div class="stat-content">
-        <p class="stat-label">Active Projects</p>
-        <h2 class="stat-value">2</h2>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon purple">📝</div>
-      <div class="stat-content">
-        <p class="stat-label">My Tasks</p>
-        <h2 class="stat-value">2</h2>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon orange">⏳</div>
-      <div class="stat-content">
-        <p class="stat-label">In Progress</p>
-        <h2 class="stat-value">1</h2>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon green">✓</div>
-      <div class="stat-content">
-        <p class="stat-label">Completed</p>
-        <h2 class="stat-value">0</h2>
-      </div>
-    </div>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading dashboard...</p>
   </div>
 
-  <!-- Content Grid -->
-  <div class="content-grid">
-    <!-- Upcoming Deadlines -->
-    <div class="card">
-      <h3>Upcoming Deadlines</h3>
-      <div class="deadline-list">
-        <div class="deadline-item">
-          <div class="deadline-info">
-            <h4>Frontend development</h4>
-            <p>Website Redesign</p>
-          </div>
-          <span class="badge-high">High</span>
-          <p class="due-date">3/15/2025</p>
+  <!-- Dashboard Content (Shows even with error, displays empty states) -->
+  <div *ngIf="!isLoading">
+    <header class="dashboard-header">
+      <div>
+        <p class="breadcrumb">
+          Logged in as: {{ getUserDisplayName() }} • {{ getUserRole() }}
+        </p>
+        <h1>Member Dashboard</h1>
+        <p class="subtitle">
+          Welcome back, {{ getUserDisplayName() }}! Here's an overview of your tasks.
+        </p>
+      </div>
+      <div class="user-info" *ngIf="currentUser">
+        <span>👤</span>
+        <span>{{ getUserDisplayName() }}</span>
+        <span class="user-badge">{{ getUserRole() }}</span>
+      </div>
+    </header>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue">📊</div>
+        <div class="stat-content">
+          <p class="stat-label">Active Projects</p>
+          <h2 class="stat-value">{{ stats.totalProjects }}</h2>
         </div>
       </div>
-      <a href="#" class="link-text">deadlines for designated members only</a>
+      <div class="stat-card">
+        <div class="stat-icon purple">📝</div>
+        <div class="stat-content">
+          <p class="stat-label">My Tasks</p>
+          <h2 class="stat-value">{{ stats.myTasks }}</h2>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">⏳</div>
+        <div class="stat-content">
+          <p class="stat-label">In Progress</p>
+          <h2 class="stat-value">{{ stats.inProgress }}</h2>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">✓</div>
+        <div class="stat-content">
+          <p class="stat-label">Completed</p>
+          <h2 class="stat-value">{{ stats.completed }}</h2>
+        </div>
+      </div>
     </div>
 
-    <!-- Project Progress -->
-    <div class="card">
-      <h3>Project Progress</h3>
-      <div class="progress-list">
-        <div class="progress-item">
-          <div class="progress-header">
-            <span class="progress-name">Website Redesign</span>
-            <span class="progress-percentage">65%</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 65%"></div>
-          </div>
-          <div class="progress-meta">
-            <span class="team-members">3 team members</span>
-            <span>Due 6/30/2025</span>
+    <!-- Content Grid -->
+    <div class="content-grid">
+      <!-- Upcoming Deadlines -->
+      <div class="card">
+        <h3>Upcoming Deadlines</h3>
+        
+        <!-- Empty State -->
+        <div *ngIf="upcomingDeadlines.length === 0" class="empty-state">
+          <p>No upcoming deadlines</p>
+        </div>
+
+        <!-- Deadlines List -->
+        <div *ngIf="upcomingDeadlines.length > 0" class="deadline-list">
+          <div class="deadline-item" *ngFor="let deadline of upcomingDeadlines">
+            <div class="deadline-info">
+              <h4>{{ deadline.taskName }}</h4>
+              <p>{{ deadline.projectName }}</p>
+            </div>
+            <span [class]="getPriorityClass(deadline.priority)">
+              {{ deadline.priority }}
+            </span>
+            <p class="due-date">{{ formatDate(deadline.dueDate) }}</p>
           </div>
         </div>
         
-        <div class="progress-item">
-          <div class="progress-header">
-            <span class="progress-name">Mobile App Development</span>
-            <span class="progress-percentage">40%</span>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: 40%"></div>
-          </div>
-          <div class="progress-meta">
-            <span class="team-members">3 team members</span>
-            <span>Due 8/31/2025</span>
+        <a href="#" class="link-text">Deadlines for designated members only</a>
+      </div>
+
+      <!-- Project Progress -->
+      <div class="card">
+        <h3>Project Progress</h3>
+        
+        <!-- Empty State -->
+        <div *ngIf="projectProgress.length === 0" class="empty-state">
+          <p>No active projects</p>
+        </div>
+
+        <!-- Progress List -->
+        <div *ngIf="projectProgress.length > 0" class="progress-list">
+          <div class="progress-item" *ngFor="let project of projectProgress">
+            <div class="progress-header">
+              <span class="progress-name">{{ project.name }}</span>
+              <span class="progress-percentage">{{ project.progress }}%</span>
+            </div>
+            <div class="progress-bar">
+              <div 
+                class="progress-fill" 
+                [style.width.%]="project.progress">
+              </div>
+            </div>
+            <div class="progress-meta">
+              <span class="team-members">
+                {{ project.teamMembers }} team member{{ project.teamMembers !== 1 ? 's' : '' }}
+              </span>
+              <span>Due {{ formatDate(project.dueDate) }}</span>
+            </div>
           </div>
         </div>
       </div>

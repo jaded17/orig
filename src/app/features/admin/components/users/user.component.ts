@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UserService } from '../../services/user.service';
+import { ApiService } from '../../../../core/services/api.service';
+
 
 interface User {
   id: number;
@@ -48,7 +49,7 @@ export class UsersComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private userService: UserService
+    private userService: ApiService
   ) {
     // Initialize Add User Form with validation
     this.addUserForm = this.fb.group({

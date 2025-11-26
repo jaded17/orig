@@ -1,32 +1,36 @@
-// src/app/app.ts
-
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-// Removed RouterOutlet import, as it was unused (NG8113)
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [], // Empty, as no child components are used here
-  templateUrl: './app.html',
-  styleUrls: ['./app.css']
+  imports: [CommonModule],
+  templateUrl: './home.html',
+  styleUrls: ['./home.css']
 })
-export class HomeComponent { // Renamed from UserLandingComponent for clarity
+export class HomeComponent {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   /**
-   * Defines the navigation handler used in the template (e.g., in the buttons).
-   * @param route The target route (e.g., '/dashboard')
+   * Navigate to login page
    */
   public navigate(route: string): void {
-    console.log(`Navigating to ${route}...`);
-    // In a real application, you would inject and use the Router service here
+    this.router.navigate([route]);
   }
 
   /**
-   * Defines the handler for the "Learn More" button.
+   * Navigate to login
+   */
+  public login(): void {
+    this.router.navigate(['/auth/login']);
+  }
+
+  /**
+   * Learn more action
    */
   public learnMore(): void {
-    alert('Learn more clicked!');
+    alert('Learn more about our project management system!');
   }
 }

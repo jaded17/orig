@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { ApiService } from './api.service';
+import { ApiService } from '../../../core/services/api.service';
 import { Expense, ExpenseHistory, CreateExpenseDto } from '../models/expense.model';
 import { ApiResponse } from '../models/api-response.model';
 import { HttpHeaders } from '@angular/common/http';

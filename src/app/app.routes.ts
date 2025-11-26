@@ -1,145 +1,114 @@
 import { Routes } from '@angular/router';
-import { roleGuard } from './core/guards/role-guard';
-import { UserRole } from './core/enums/user-role.enum';
 
 export const routes: Routes = [
-
-  // --- 0. LANDING PAGE (Public Access) ---
-  { 
-    path: '', 
-    loadComponent: () => import('./features/landing/components/home/home')
-      .then(m => m.HomeComponent)
+  // Landing page
+  {
+    path: '',
+    loadComponent: () => import('./features/landing/components/home/home').then(m => m.HomeComponent)
   },
 
-  // --- 1. AUTHENTICATION ROUTES ---
+  // Auth routes
   {
     path: 'auth',
     children: [
       {
         path: 'login',
-        loadComponent: () => import('../../../features/auth/components/login/login.component')
-          .then(m => m.LoginComponent)
+        loadComponent: () => import('./features/auth/components/login/login.component').then(m => m.LoginComponent)
       },
       {
         path: 'register',
-        loadComponent: () => import('./features/auth/components/register/register.component')
-          .then(m => m.RegisterComponent)
+        loadComponent: () => import('./features/auth/components/register/register.component').then(m => m.RegisterComponent)
       },
       {
-        path: '',
-        redirectTo: 'login',
-        pathMatch: 'full'
+        path: 'forgot-password',
+        loadComponent: () => import('./features/auth/components/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent)
       }
     ]
   },
 
-  // --- 2. ADMIN ROUTES (Protected) ---
+  // Admin routes
   {
     path: 'admin',
-    canActivate: [roleGuard],
-    data: { roles: [UserRole.ADMIN] },
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { 
-        path: 'dashboard', 
-        loadComponent: () => import('./features/admin/components/admin-dashboard/admin-dashboard.component')
-          .then(m => m.AdminDashboardComponent)
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/admin/components/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
       },
-      { 
-        path: 'permissions', 
-        loadComponent: () => import('./features/admin/components/permissions/permissions.component')
-          .then(m => m.PermissionsComponent) 
+      {
+        path: 'users',
+        loadComponent: () => import('./features/admin/components/users/user.component').then(m => m.UsersComponent)
       },
-      { 
-        path: 'roles', 
-        loadComponent: () => import('./features/admin/components/roles/roles.component')
-          .then(m => m.RolesComponent) 
+      {
+        path: 'roles',
+        loadComponent: () => import('./features/admin/components/roles/roles.component').then(m => m.RolesComponent)
       },
-      { 
-        path: 'users', 
-        loadComponent: () => import('./features/admin/components/users/users')
-          .then(m => m.UsersComponent) 
+      {
+        path: 'permissions',
+        loadComponent: () => import('./features/admin/components/permissions/permissions.component').then(m => m.PermissionsComponent)
       }
     ]
   },
-  
-  // --- 3. PROJECT MANAGER ROUTES (Protected) ---
+
+  // Project Manager routes
   {
     path: 'pm',
-    canActivate: [roleGuard],
-    data: { roles: [UserRole.PROJECT_MANAGER, UserRole.ADMIN] },
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { 
-        path: 'dashboard', 
-        loadComponent: () => import('./features/project-manager/components/pm-dashboard/pm-dashboard.component')
-          .then(m => m.PmDashboardComponent) 
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/project-manager/components/pm-dashboard/pm-dashboard').then(m => m.PmDashboard)
       },
-      { 
-        path: 'project-management', 
-        loadComponent: () => import('./features/project-manager/components/project-management/project-management.component')
-          .then(m => m.ProjectManagementComponent) 
+      {
+        path: 'projects',
+        loadComponent: () => import('./features/project-manager/components/project-management/project-management.component').then(m => m.ProjectManagementComponent)
       },
-      { 
-        path: 'task-board', 
-        loadComponent: () => import('./features/project-manager/components/task-board/task-board.component')
-          .then(m => m.TaskBoardComponent) 
+      {
+        path: 'tasks',
+        loadComponent: () => import('./features/project-manager/components/task-board/task-board.component').then(m => m.TaskBoardComponent)
       },
-      { 
-        path: 'receipts', 
-        loadComponent: () => import('./features/project-manager/components/receipts/receipts.component')
-          .then(m => m.ReceiptsComponent) 
+      {
+        path: 'team',
+        loadComponent: () => import('./features/project-manager/components/team-member/team-member.component').then(m => m.TeamMembersComponent)
       },
-      { 
-        path: 'team-members', 
-        loadComponent: () => import('./features/project-manager/components/team-member/team-member.component')
-          .then(m => m.TeamMemberComponent) 
+      {
+        path: 'receipts',
+        loadComponent: () => import('./features/project-manager/components/receipts/receipts.component').then(m => m.ReceiptApprovalComponent)
       }
     ]
   },
 
-  // --- 4. MEMBER ROUTES (Protected) ---
+ // Member routes
+{
+  path: 'member',
+  children: [
+    {
+      path: 'dashboard',
+      loadComponent: () => import('./features/member/components/dashboard/dashboard.component').then(m => m.MemberDashboardComponent)
+    },
+    {
+      path: 'projects',
+      loadComponent: () => import('./features/member/components/project-management/project-management.component').then(m => m.ProjectManagementComponent)
+    },
+    {
+      path: 'team',
+      loadComponent: () => import('./features/member/components/team-member/team-member.component').then(m => m.TeamMembersComponent)
+    },
+    {
+      path: 'expenses',
+      loadComponent: () => import('./features/member/components/expenses/expenses.component').then(m => m.ExpensesComponent)
+    },
+
+  ]
+},
+
+  // Shared routes
   {
-    path: 'member',
-    canActivate: [roleGuard],
-    data: { roles: [UserRole.MEMBER, UserRole.ADMIN] },
-    children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { 
-        path: 'dashboard', 
-        loadComponent: () => import('./features/member/components/dashboard/dashboard.component')
-          .then(m => m.DashboardComponent) 
-      },
-      { 
-        path: 'expenses', 
-        loadComponent: () => import('./features/member/components/expenses/expenses.component')
-          .then(m => m.ExpensesComponent) 
-      },
-      { 
-        path: 'project-management', 
-        loadComponent: () => import('./features/member/components/project-management/project-management.component')
-          .then(m => m.ProjectManagementComponent) 
-      },
-      { 
-        path: 'task-board', 
-        loadComponent: () => import('./features/member/components/task-board/task-board.component')
-          .then(m => m.TaskBoardComponent) 
-      },
-      { 
-        path: 'team-members', 
-        loadComponent: () => import('./features/member/components/team-member/team-member.component')
-          .then(m => m.TeamMemberComponent) 
-      }
-    ]
+    path: 'shared/change-password',
+    loadComponent: () => import('./shared/components/change-password/change-password.component').then(m => m.ChangePasswordComponent)
   },
 
-  // --- 5. UNAUTHORIZED ROUTE ---
+  // Wildcard
   {
-    path: 'unauthorized',
-    loadComponent: () => import('./shared/components/unauthorized/unauthorized.component')
-      .then(m => m.UnauthorizedComponent)
-  },
-
-  // --- 6. FALLBACK ROUTE (404) ---
-  { path: '**', redirectTo: '' }
+    path: '**',
+    redirectTo: ''
+  }
 ];

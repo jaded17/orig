@@ -1,15 +1,19 @@
-import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-import { ApiService } from './api.service';
+import { BehaviorSubject, Observable, forkJoin } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { DashboardStats, Deadline, ProjectProgress } from '../models/dashboard.model';
-import { ApiResponse } from '../models/api-response.model';
+
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { of } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardService {
-  // State management with BehaviorSubjects
+  private readonly API_URL = `${environment.apiUrl}/member/dashboard`;
+
+  // State management
   private statsSubject = new BehaviorSubject<DashboardStats | null>(null);
   private deadlinesSubject = new BehaviorSubject<Deadline[]>([]);
   private projectsSubject = new BehaviorSubject<ProjectProgress[]>([]);
@@ -21,92 +25,108 @@ export class DashboardService {
   public projects$ = this.projectsSubject.asObservable();
   public loading$ = this.loadingSubject.asObservable();
 
-  constructor(private apiService: ApiService) {}
+  constructor(private http: HttpClient) {}
 
   /**
-   * Get dashboard statistics
-   */
-  getStats(): Observable<DashboardStats> {
-    this.loadingSubject.next(true);
-    return this.apiService.get<ApiResponse<DashboardStats>>('dashboard/stats')
-      .pipe(
-        map(response => response.data),
-        tap(stats => {
-          this.statsSubject.next(stats);
-          this.loadingSubject.next(false);
-        })
-      );
-  }
-
-  /**
-   * Get upcoming deadlines
-   */
-  getUpcomingDeadlines(): Observable<Deadline[]> {
-    this.loadingSubject.next(true);
-    return this.apiService.get<ApiResponse<Deadline[]>>('dashboard/deadlines')
-      .pipe(
-        map(response => response.data),
-        tap(deadlines => {
-          this.deadlinesSubject.next(deadlines);
-          this.loadingSubject.next(false);
-        })
-      );
-  }
-
-  /**
-   * Get project progress
-   */
-  getProjectProgress(): Observable<ProjectProgress[]> {
-    this.loadingSubject.next(true);
-    return this.apiService.get<ApiResponse<ProjectProgress[]>>('dashboard/projects')
-      .pipe(
-        map(response => response.data),
-        tap(projects => {
-          this.projectsSubject.next(projects);
-          this.loadingSubject.next(false);
-        })
-      );
-  }
-
-  /**
-   * Load all dashboard data
+   * Load all dashboard data from Laravel backend
    */
   loadDashboardData(): Observable<any> {
     this.loadingSubject.next(true);
-    return new Observable(observer => {
-      Promise.all([
-        this.getStats().toPromise(),
-        this.getUpcomingDeadlines().toPromise(),
-        this.getProjectProgress().toPromise()
-      ])
-      .then(results => {
+
+    return forkJoin({
+      stats: this.fetchStats(),
+      deadlines: this.fetchDeadlines(),
+      projects: this.fetchProjects()
+    }).pipe(
+      tap(data => {
+        this.statsSubject.next(data.stats);
+        this.deadlinesSubject.next(data.deadlines);
+        this.projectsSubject.next(data.projects);
         this.loadingSubject.next(false);
-        observer.next(results);
-        observer.complete();
+      }),
+      catchError(error => {
+        this.loadingSubject.next(false);
+        throw error;
       })
-      .catch(error => {
-        this.loadingSubject.next(false);
-        observer.error(error);
-      });
-    });
+    );
   }
 
   /**
-   * Refresh dashboard data
+   * Fetch dashboard statistics
    */
-  refreshDashboard(): void {
-    this.loadDashboardData().subscribe({
-      next: () => console.log('Dashboard refreshed'),
-      error: (err) => console.error('Error refreshing dashboard:', err)
-    });
-  }
+  private fetchStats(): Observable<DashboardStats> {
+  return this.http.get<any>(`${this.API_URL}/stats`).pipe(
+    map(response => ({
+      totalProjects: response.data.total_projects || 0,
+      myTasks: response.data.my_tasks || 0,
+      inProgress: response.data.in_progress || 0,
+      completed: response.data.completed || 0
+    })),
+    catchError(() => of({
+      totalProjects: 0,
+      myTasks: 0,
+      inProgress: 0,
+      completed: 0
+    }))
+  );
+}
 
   /**
-   * Clear dashboard cache
+   * Fetch upcoming deadlines
    */
-  clearCache(): void {
-    this.statsSubject.next(null);
-    this.deadlinesSubject.next([]);
-    this.projectsSubject.next([]);
+  private fetchDeadlines(): Observable<Deadline[]> {
+  return this.http.get<any>(`${this.API_URL}/deadlines`).pipe(
+    map(response => 
+      (response.data || []).map((item: any) => ({
+        id: item.id,
+        taskName: item.task_name,
+        projectName: item.project_name,
+        priority: item.priority,
+        dueDate: item.due_date
+      }))
+    ),
+    catchError(() => of([]))
+  );
+}
+
+
+  /**
+   * Fetch project progress
+   */
+  private fetchProjects(): Observable<ProjectProgress[]> {
+  return this.http.get<any>(`${this.API_URL}/projects`).pipe(
+    map(response => 
+      (response.data || []).map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        progress: item.progress || 0,
+        teamMembers: item.team_members_count || 0,
+        dueDate: item.due_date
+      }))
+    ),
+    catchError(() => of([]))
+  );
+}
+
+  /**
+   * Refresh specific data
+   */
+  refreshStats(): Observable<DashboardStats> {
+    return this.fetchStats().pipe(
+      tap(stats => this.statsSubject.next(stats))
+    );
   }
+
+  refreshDeadlines(): Observable<Deadline[]> {
+    return this.fetchDeadlines().pipe(
+      tap(deadlines => this.deadlinesSubject.next(deadlines))
+    );
+  }
+
+  refreshProjects(): Observable<ProjectProgress[]> {
+    return this.fetchProjects().pipe(
+      tap(projects => this.projectsSubject.next(projects))
+    );
+  }
+  
 }

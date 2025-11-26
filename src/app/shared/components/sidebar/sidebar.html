@@ -1,37 +1,26 @@
-<!--PM-->
 <div class="sidebar">
   <div class="sidebar-header">
-    <h2>Members</h2>
-    <p>Mike Johnson</p>
+    <!-- Static User Info Placeholder -->
+    <h2 class="text-xl font-semibold text-white">Project App</h2>
+    <p class="text-sm text-gray-400">Mike Johnson (PM)</p>
   </div>
   
-  <nav class="sidebar-nav">
+  <nav class="sidebar-nav mt-8">
+    <!-- Iterate over the filtered menu items -->
     <a *ngFor="let item of menuItems" 
-       [routerLink]="item.route"
-       class="nav-item"
-       routerLinkActive="active">
-      <span class="nav-icon">{{item.icon}}</span>
+      [routerLink]="item.route"
+      class="nav-item"
+      routerLinkActive="active">
+      
+      <!-- FIX: Changed from {{item.icon}} to use item.iconClass as a CSS class binding. -->
+      <!-- This assumes you are using Font Awesome or a similar icon library. -->
+      <i class="nav-icon fa-fw" [class]="item.iconClass"></i>
       <span class="nav-label">{{item.label}}</span>
     </a>
   </nav>
- 
-</div>
-
-<!--member-->
-<div class="sidebar">
-  <div class="sidebar-header">
-    <h2>Members</h2>
-    <p>Mike Johnson</p>
-  </div>
   
-  <nav class="sidebar-nav">
-    <a *ngFor="let item of menuItems" 
-       [routerLink]="item.route"
-       class="nav-item"
-       routerLinkActive="active">
-      <span class="nav-icon">{{item.icon}}</span>
-      <span class="nav-label">{{item.label}}</span>
-    </a>
-  </nav>
- 
+  <!-- Placeholder for Logout/Footer links if needed -->
+  <div class="sidebar-footer">
+    <!-- This section can contain links to settings or logout -->
+  </div>
 </div>

@@ -1,12 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'; // FIX: Required for [formGroup]
+import { ActivatedRoute, Router, RouterLink } from '@angular/router'; // FIX: RouterLink required for standalone component
+
+import { CommonModule } from '@angular/common'; // FIX: Required for *ngIf, *ngFor (Fixes NG8103)
 import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
+  // FIX: Added 'standalone: true' as implied by previous NG6008 errors
+  standalone: true, 
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  imports: [
+    // FIX: All template directives must be imported explicitly
+    CommonModule, 
+    ReactiveFormsModule,
+    FormsModule,
+    RouterLink // Allows use of routerLink in the template
+  ],
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
@@ -17,12 +28,14 @@ export class LoginComponent implements OnInit {
   showPassword = false;
 
   constructor(
-    private formBuilder: FormBuilder,
+    // Renaming 'formBuilder' to 'fb' for consistency with common Angular conventions
+    private fb: FormBuilder, 
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService
   ) {
-    // Redirect to home if already logged in
+    // NOTE: Redirect logic is typically best handled by an Angular Guard 
+    // rather than the component constructor. Keeping it for now.
     if (this.authService.currentUserValue) {
       this.router.navigate(['/']);
     }
@@ -30,7 +43,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     // Initialize form
-    this.loginForm = this.formBuilder.group({
+    this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
@@ -64,9 +77,10 @@ export class LoginComponent implements OnInit {
     const password = this.f['password'].value;
 
     this.authService.login(email, password).subscribe({
-      next: (user) => {
+      next: () => {
         this.loading = false;
-        // Navigation is handled by authService.login()
+        // Navigation is typically handled by authService.login() or here
+        this.router.navigate([this.returnUrl]);
       },
       error: (error) => {
         this.loading = false;

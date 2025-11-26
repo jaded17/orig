@@ -1,8 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
-import { DashboardService } from '../../services/dashboard.service';
 import { DashboardStats, Deadline, ProjectProgress } from '../../models/dashboard.model';
+
+import { CommonModule } from '@angular/common';
+import { UserRole } from '../../../../core/enums/user-role.enum';
+import { AuthService } from '../../../../core/services/auth.service';
+import { DashboardService } from '../../services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,6 +16,9 @@ import { DashboardStats, Deadline, ProjectProgress } from '../../models/dashboar
 })
 export class MemberDashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  
+  // User data
+  currentUser: any = null;
   
   // Data properties
   stats: DashboardStats = {
@@ -28,9 +34,13 @@ export class MemberDashboardComponent implements OnInit, OnDestroy {
   isLoading = false;
   error: string | null = null;
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
+    this.loadCurrentUser();
     this.loadDashboardData();
     this.subscribeToUpdates();
   }
@@ -41,7 +51,22 @@ export class MemberDashboardComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Load all dashboard data
+   * Load current user from auth service
+   */
+  private loadCurrentUser(): void {
+    // Get user from AuthService BehaviorSubject
+    this.currentUser = this.authService.currentUserValue;
+    
+    // Also subscribe to updates
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.currentUser = user;
+      });
+  }
+
+  /**
+   * Load all dashboard data from backend
    */
   loadDashboardData(): void {
     this.isLoading = true;
@@ -55,7 +80,7 @@ export class MemberDashboardComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           this.isLoading = false;
-          this.error = err.message;
+          this.error = err.message || 'Failed to load dashboard data';
           console.error('Error loading dashboard:', err);
         }
       });
@@ -98,26 +123,11 @@ export class MemberDashboardComponent implements OnInit, OnDestroy {
 
   /**
    * Refresh dashboard data
+   * Uncomment when backend is ready
    */
   refreshDashboard(): void {
-    this.loadDashboardData();
-  }
-
-  /**
-   * Handle view archive action
-   */
-  viewArchive(): void {
-    console.log('View Archive clicked');
-    // Navigate to archive page or open modal
-  }
-
-  /**
-   * Handle website action
-   */
-  goToWebsite(): void {
-    console.log('Website clicked');
-    // Navigate to website or open external link
-    window.open('https://your-website.com', '_blank');
+    // this.loadDashboardData();
+    console.log('Refresh dashboard - Backend not connected yet');
   }
 
   /**
@@ -125,5 +135,44 @@ export class MemberDashboardComponent implements OnInit, OnDestroy {
    */
   getPriorityClass(priority: string): string {
     return `badge-${priority.toLowerCase()}`;
+  }
+
+  /**
+   * Format date for display
+   */
+  formatDate(date: string): string {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric'
+    });
+  }
+
+  /**
+   * Get user display name
+   */
+  getUserDisplayName(): string {
+    if (!this.currentUser) return 'User';
+    return this.currentUser.name || this.currentUser.email || 'User';
+  }
+
+  /**
+   * Get user role display
+   */
+  getUserRole(): string {
+    if (!this.currentUser) return 'Member';
+    
+    // Map UserRole enum to display string
+    switch(this.currentUser.role) {
+      case UserRole.ADMIN:
+        return 'Admin';
+      case UserRole.PROJECT_MANAGER:
+        return 'Project Manager';
+      case UserRole.MEMBER:
+        return 'Team Member';
+      default:
+        return 'Member';
+    }
   }
 }
