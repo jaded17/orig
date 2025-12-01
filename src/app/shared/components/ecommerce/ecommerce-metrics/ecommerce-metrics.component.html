@@ -1,0 +1,38 @@
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+    <div class="flex items-center justify-center w-12 h-12 bg-teal-100 rounded-full dark:bg-teal-900/30">
+      <span [innerHTML]="icons.groupIcon | safeHtml" class="text-teal-600 dark:text-teal-400"></span>
+    </div>
+    <div class="mt-4">
+      <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Tasks Completed</span>
+    </div>
+    <h3 class="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">39 / 56</h3>
+    <div class="mt-4 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+      <div class="bg-gray-900 h-2 rounded-full dark:bg-white" style="width: 69.6%"></div>
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+    <div class="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full dark:bg-green-900/30">
+      <span [innerHTML]="icons.boxIconLine | safeHtml" class="text-green-600 dark:text-green-400"></span>
+    </div>
+    <div class="mt-4">
+      <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Budget Status</span>
+    </div>
+    <h3 class="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">$54,500 / $100,000</h3>
+    <div class="mt-4 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+      <div class="bg-gray-900 h-2 rounded-full dark:bg-white" style="width: 54.5%"></div>
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+    <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full dark:bg-blue-900/30">
+      <span [innerHTML]="icons.groupIcon | safeHtml" class="text-blue-600 dark:text-blue-400"></span>
+    </div>
+    <div class="mt-4">
+      <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Active Projects</span>
+    </div>
+    <h3 class="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">3</h3>
+    <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">All projects on schedule</p>
+  </div>
+</div>

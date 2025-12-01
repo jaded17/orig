@@ -1,0 +1,266 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 sm:p-6 lg:p-8">
+  <div class="mx-auto max-w-7xl">
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex items-center justify-center py-20">
+      <div class="flex flex-col items-center gap-4">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500"></div>
+        <p class="text-theme-sm text-gray-500 dark:text-gray-400">Loading messages...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="hasError && !isLoading" class="flex items-center justify-center py-20">
+      <div class="max-w-md text-center">
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-error-50 dark:bg-error-500/20">
+          <svg class="h-8 w-8 text-error-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Error Loading Messages</h3>
+        <p class="mb-4 text-theme-sm text-gray-500 dark:text-gray-400">{{ errorMessage }}</p>
+        <button 
+          (click)="retry()"
+          class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 transition">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Retry
+        </button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!isLoading && !hasError">
+      <!-- Header -->
+      <div class="mb-6">
+        <h1 class="text-title-md font-semibold text-gray-900 dark:text-white">Feedback & Messages</h1>
+        <p class="mt-1 text-theme-sm text-gray-500 dark:text-gray-400">
+          Send comments or messages to your Project Manager
+        </p>
+      </div>
+
+      <!-- Main Grid Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left Column - Messages (2/3 width on large screens) -->
+        <div class="lg:col-span-2 rounded-xl bg-white dark:bg-gray-dark border border-gray-200 dark:border-white/5 shadow-theme-sm overflow-hidden flex flex-col h-[calc(100vh-280px)] min-h-[600px]">
+          
+          <!-- Chat Header -->
+          <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+            <div class="flex items-center gap-4">
+              <!-- Avatar -->
+              <div class="relative flex-shrink-0">
+                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-500 text-white font-semibold text-lg">
+                  PM
+                </div>
+                <div class="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white dark:border-gray-dark"
+                  [ngClass]="projectManager.status === 'online' ? 'bg-success-500' : 'bg-gray-400'">
+                </div>
+              </div>
+              <!-- Info -->
+              <div class="flex-1 min-w-0">
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white">{{ projectManager.name }}</h3>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="inline-flex items-center text-theme-xs font-medium"
+                    [ngClass]="projectManager.status === 'online' ? 'text-success-600 dark:text-success-500' : 'text-gray-500 dark:text-gray-400'">
+                    <span class="w-1.5 h-1.5 rounded-full mr-1.5"
+                      [ngClass]="projectManager.status === 'online' ? 'bg-success-500' : 'bg-gray-400'">
+                    </span>
+                    {{ projectManager.status === 'online' ? 'Online' : 'Offline' }}
+                  </span>
+                </div>
+              </div>
+              <!-- Category Selector -->
+              <div class="flex-shrink-0">
+                <select 
+                  [(ngModel)]="selectedCategory"
+                  class="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-3 py-2 text-theme-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                  <option *ngFor="let category of categories" [value]="category.value">
+                    {{ category.label }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Messages Container -->
+          <div #messagesContainer class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+            <div *ngFor="let message of messages" 
+              class="flex gap-3"
+              [ngClass]="message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'">
+              
+              <!-- Avatar -->
+              <div class="flex-shrink-0" *ngIf="message.sender === 'manager'">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-brand-500 text-white font-semibold text-sm">
+                  PM
+                </div>
+              </div>
+
+              <!-- Message Content -->
+              <div class="flex flex-col max-w-[70%]"
+                [ngClass]="message.sender === 'user' ? 'items-end' : 'items-start'">
+                
+                <!-- Message Header -->
+                <div class="flex items-center gap-2 mb-1 px-1">
+                  <span class="text-theme-xs font-medium text-gray-700 dark:text-gray-300">
+                    {{ message.sender_name }}
+                  </span>
+                  <span class="text-theme-xs text-gray-400 dark:text-gray-500">
+                    {{ message.timestamp }}
+                  </span>
+                </div>
+
+                <!-- Category Badge -->
+                <div class="mb-1 px-1" *ngIf="message.category !== 'general'">
+                  <span class="inline-flex items-center px-2 py-0.5 text-theme-xs font-medium rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                    {{ getCategoryLabel(message.category) }}
+                  </span>
+                </div>
+
+                <!-- Message Bubble -->
+                <div class="rounded-lg px-4 py-3 shadow-theme-xs"
+                  [ngClass]="message.sender === 'user' 
+                    ? 'bg-brand-500 text-white rounded-tr-none' 
+                    : 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-300 rounded-tl-none'">
+                  <p class="text-theme-sm whitespace-pre-wrap">{{ message.message }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div *ngIf="messages.length === 0" class="flex flex-col items-center justify-center py-12 text-center">
+              <svg class="h-16 w-16 text-gray-300 dark:text-gray-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <p class="text-gray-500 dark:text-gray-400 text-theme-sm">No messages yet. Start a conversation!</p>
+            </div>
+          </div>
+
+          <!-- Message Input -->
+          <div class="p-4 border-t border-gray-200 dark:border-gray-800">
+            <div class="flex items-end gap-3">
+              <!-- Text Input -->
+              <div class="flex-1 relative">
+                <textarea
+                  #messageInput
+                  [(ngModel)]="newMessage"
+                  (keydown)="onKeyPress($event)"
+                  [disabled]="isSending"
+                  placeholder="Type your message or feedback..."
+                  rows="1"
+                  class="w-full resize-none rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-3 text-theme-sm text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed custom-scrollbar"
+                  style="max-height: 120px; overflow-y: auto;"></textarea>
+                <p class="text-theme-xs text-gray-400 dark:text-gray-500 mt-2 px-1">
+                  Press Enter to send, Shift + Enter for new line
+                </p>
+              </div>
+              
+              <!-- Send Button -->
+              <button
+                (click)="sendMessage()"
+                [disabled]="!newMessage.trim() || isSending"
+                class="flex-shrink-0 flex items-center justify-center h-11 w-11 rounded-lg bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                <svg *ngIf="!isSending" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+                <svg *ngIf="isSending" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column - Guidelines & Info -->
+        <div class="lg:col-span-1 space-y-6">
+          
+          <!-- Communication Guidelines -->
+          <div class="rounded-xl bg-white dark:bg-gray-dark border border-gray-200 dark:border-white/5 shadow-theme-sm p-6">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Communication Guidelines</h3>
+            
+            <!-- Response Time -->
+            <div class="mb-4 p-4 rounded-lg bg-blue-light-50 dark:bg-blue-light-500/10 border border-blue-light-100 dark:border-blue-light-500/20">
+              <p class="text-theme-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Response Time</p>
+              <p class="text-theme-sm font-semibold text-blue-light-700 dark:text-blue-light-400">
+                Typically within 24 hours on business days
+              </p>
+            </div>
+
+            <!-- What You Can Do -->
+            <div>
+              <p class="text-theme-sm font-medium text-gray-700 dark:text-gray-300 mb-3">You can:</p>
+              <ul class="space-y-2">
+                <li *ngFor="let guideline of communicationGuidelines" 
+                  class="flex items-start gap-2 text-theme-sm text-gray-600 dark:text-gray-400">
+                  <svg class="flex-shrink-0 h-5 w-5 text-success-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>{{ guideline }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Project Manager Card -->
+          <div class="rounded-xl bg-white dark:bg-gray-dark border border-gray-200 dark:border-white/5 shadow-theme-sm p-6">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Project Manager</h3>
+            
+            <div class="flex items-center gap-3 mb-4">
+              <div class="relative flex-shrink-0">
+                <div class="flex h-12 w-12 items-center justify-center rounded-full bg-brand-500 text-white font-semibold text-lg">
+                  PM
+                </div>
+                <div class="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white dark:border-gray-dark"
+                  [ngClass]="projectManager.status === 'online' ? 'bg-success-500' : 'bg-gray-400'">
+                </div>
+              </div>
+              <div>
+                <p class="text-theme-sm font-semibold text-gray-900 dark:text-white">{{ projectManager.name }}</p>
+                <p class="text-theme-xs text-gray-500 dark:text-gray-400">{{ projectManager.availability }}</p>
+              </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="space-y-2">
+              <button class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-800 text-theme-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Schedule Meeting
+              </button>
+              <button class="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-800 text-theme-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                View Documents
+              </button>
+            </div>
+          </div>
+
+          <!-- Help Card -->
+          <div class="rounded-xl bg-brand-50 dark:bg-brand-500/10 border border-brand-100 dark:border-brand-500/20 p-6">
+            <div class="flex items-start gap-3">
+              <div class="flex-shrink-0 h-10 w-10 rounded-full bg-brand-500 flex items-center justify-center">
+                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-theme-sm font-semibold text-brand-700 dark:text-brand-400 mb-1">Need Help?</h4>
+                <p class="text-theme-xs text-brand-600 dark:text-brand-400/80 mb-3">
+                  If you have urgent concerns, please contact us directly.
+                </p>
+                <button class="text-theme-xs font-medium text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 underline">
+                  Contact Support
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

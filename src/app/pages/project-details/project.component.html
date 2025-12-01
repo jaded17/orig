@@ -1,0 +1,259 @@
+<div class="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 sm:p-6 lg:p-8">
+  <div class="mx-auto max-w-7xl">
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="flex items-center justify-center py-20">
+      <div class="flex flex-col items-center gap-4">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500"></div>
+        <p class="text-theme-sm text-gray-500 dark:text-gray-400">Loading project details...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="hasError && !isLoading" class="flex items-center justify-center py-20">
+      <div class="max-w-md text-center">
+        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-error-50 dark:bg-error-500/20">
+          <svg class="h-8 w-8 text-error-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h3 class="mb-2 text-lg font-semibold text-gray-900 dark:text-white">Error Loading Project</h3>
+        <p class="mb-4 text-theme-sm text-gray-500 dark:text-gray-400">{{ errorMessage }}</p>
+        <button 
+          (click)="retry()"
+          class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 transition">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Retry
+        </button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!isLoading && !hasError">
+      <!-- Header -->
+      <div class="mb-6">
+        <h1 class="text-title-md font-semibold text-gray-900 dark:text-white">Project Details</h1>
+        <p class="mt-1 text-theme-sm text-gray-500 dark:text-gray-400">
+          View milestones, deadlines, task updates and project documents
+        </p>
+      </div>
+
+      <!-- Project Card -->
+      <div class="rounded-xl bg-white dark:bg-gray-dark border border-gray-200 dark:border-white/5 shadow-theme-sm p-6 mb-6">
+        <!-- Project Header -->
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ projectTitle }}</h2>
+            <p class="mt-1 text-theme-sm text-gray-500 dark:text-gray-400">{{ projectDescription }}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-theme-xs text-gray-500 dark:text-gray-400">Overall Progress</p>
+            <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ overallProgress }}%</p>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="mb-4">
+          <div class="h-2 w-full rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+            <div 
+              class="h-full bg-gray-900 dark:bg-white/90 rounded-full transition-all duration-300"
+              [style.width.%]="overallProgress">
+            </div>
+          </div>
+        </div>
+
+        <!-- Dates -->
+        <div class="flex items-center gap-6 text-theme-sm text-gray-500 dark:text-gray-400">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>Start: {{ startDate }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>End: {{ endDate }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="rounded-xl bg-white dark:bg-gray-dark border border-gray-200 dark:border-white/5 shadow-theme-sm overflow-hidden">
+        <!-- Tab Buttons -->
+        <div class="border-b border-gray-200 dark:border-gray-800">
+          <div class="flex">
+            <button
+              (click)="setActiveTab('gantt')"
+              [class.border-brand-500]="activeTab === 'gantt'"
+              [class.text-brand-600]="activeTab === 'gantt'"
+              [class.dark:text-brand-400]="activeTab === 'gantt'"
+              [class.text-gray-600]="activeTab !== 'gantt'"
+              [class.dark:text-gray-400]="activeTab !== 'gantt'"
+              class="flex-1 px-6 py-4 text-sm font-medium border-b-2 border-transparent hover:text-gray-900 dark:hover:text-white transition-colors">
+              Gantt Chart
+            </button>
+            <button
+              (click)="setActiveTab('milestones')"
+              [class.border-brand-500]="activeTab === 'milestones'"
+              [class.text-brand-600]="activeTab === 'milestones'"
+              [class.dark:text-brand-400]="activeTab === 'milestones'"
+              [class.text-gray-600]="activeTab !== 'milestones'"
+              [class.dark:text-gray-400]="activeTab !== 'milestones'"
+              class="flex-1 px-6 py-4 text-sm font-medium border-b-2 border-transparent hover:text-gray-900 dark:hover:text-white transition-colors">
+              Milestones
+            </button>
+            <button
+              (click)="setActiveTab('updates')"
+              [class.border-brand-500]="activeTab === 'updates'"
+              [class.text-brand-600]="activeTab === 'updates'"
+              [class.dark:text-brand-400]="activeTab === 'updates'"
+              [class.text-gray-600]="activeTab !== 'updates'"
+              [class.dark:text-gray-400]="activeTab !== 'updates'"
+              class="flex-1 px-6 py-4 text-sm font-medium border-b-2 border-transparent hover:text-gray-900 dark:hover:text-white transition-colors">
+              Task Updates
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="p-6">
+          <!-- Gantt Chart Tab -->
+          <div *ngIf="activeTab === 'gantt'">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-6">Project Timeline</h3>
+
+            <!-- Timeline Header -->
+            <div class="mb-8">
+              <h4 class="text-theme-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Gantt Chart</h4>
+              
+              <!-- Month Headers -->
+              <div class="relative ml-48">
+                <div class="flex">
+                  <div *ngFor="let month of months" class="flex-1 text-center">
+                    <span class="text-theme-sm font-medium text-gray-500 dark:text-gray-400">{{ month }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tasks -->
+            <div class="space-y-4">
+              <div *ngFor="let task of tasks" class="flex items-center">
+                <!-- Task Info -->
+                <div class="w-48 pr-4">
+                  <p class="text-theme-sm font-medium text-gray-700 dark:text-gray-300">{{ task.name }}</p>
+                  <p class="text-theme-xs text-gray-500 dark:text-gray-400 mt-0.5">{{ task.team }}</p>
+                  <p class="text-theme-xs font-medium text-gray-600 dark:text-gray-400 mt-0.5">{{ task.progress }}%</p>
+                </div>
+
+                <!-- Timeline Bar -->
+                <div class="flex-1 relative h-8">
+                  <!-- Background Grid -->
+                  <div class="absolute inset-0 flex">
+                    <div *ngFor="let month of months" class="flex-1 border-l border-gray-100 dark:border-gray-800 first:border-l-0"></div>
+                  </div>
+
+                  <!-- Progress Bar -->
+                  <div 
+                    class="absolute top-1/2 -translate-y-1/2 h-6 rounded-lg shadow-sm transition-all duration-300 flex items-center px-3"
+                    [ngClass]="getStatusColor(task.status)"
+                    [style.left]="getTaskPosition(task).left"
+                    [style.width]="getTaskPosition(task).width">
+                    <span class="text-theme-xs font-medium text-white">{{ task.progress }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="flex items-center gap-6 mt-8 pt-6 border-t border-gray-200 dark:border-gray-800">
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-sm bg-success-500"></div>
+                <span class="text-theme-sm text-gray-700 dark:text-gray-300">Completed</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-sm bg-brand-500"></div>
+                <span class="text-theme-sm text-gray-700 dark:text-gray-300">In Progress</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-sm bg-gray-300 dark:bg-gray-700"></div>
+                <span class="text-theme-sm text-gray-700 dark:text-gray-300">Upcoming</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Milestones Tab -->
+          <div *ngIf="activeTab === 'milestones'">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Project Milestones</h3>
+            <div class="space-y-3">
+              <div *ngFor="let milestone of milestones" 
+                class="flex items-start gap-3 p-4 rounded-lg border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-colors">
+                <!-- Status Icon -->
+                <div class="flex-shrink-0 mt-0.5">
+                  <div [ngClass]="getStatusBadgeColor(milestone.status)" 
+                    class="p-1.5 rounded-full" 
+                    [innerHTML]="getStatusIcon(milestone.status)">
+                  </div>
+                </div>
+                <!-- Milestone Content -->
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2 mb-1">
+                    <h4 class="text-theme-sm font-medium text-gray-900 dark:text-white">
+                      {{ milestone.title }}
+                    </h4>
+                    <span [ngClass]="getStatusBadgeColor(milestone.status)" 
+                      class="px-2 py-0.5 text-xs font-medium rounded-full whitespace-nowrap">
+                      {{ milestone.status }}
+                    </span>
+                  </div>
+                  <p class="text-theme-xs text-gray-500 dark:text-gray-400 mb-1">
+                    {{ milestone.description }}
+                  </p>
+                  <p class="text-theme-xs text-gray-400 dark:text-gray-500">
+                    Due: {{ milestone.due_date }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Task Updates Tab -->
+          <div *ngIf="activeTab === 'updates'">
+            <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Task Updates</h3>
+            <div class="space-y-3">
+              <div *ngFor="let update of taskUpdates" 
+                class="p-4 rounded-lg border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 transition-colors">
+                <!-- Task Name -->
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <h4 class="text-theme-sm font-medium text-gray-900 dark:text-white">
+                    {{ update.task_name }}
+                  </h4>
+                  <span *ngIf="update.status" 
+                    [ngClass]="getStatusBadgeColor(update.status)" 
+                    class="px-2 py-0.5 text-xs font-medium rounded-full whitespace-nowrap">
+                    {{ update.status }}
+                  </span>
+                </div>
+                <!-- Update Text -->
+                <p class="text-theme-sm text-gray-600 dark:text-gray-300 mb-2">
+                  {{ update.update_text }}
+                </p>
+                <!-- Meta Info -->
+                <div class="flex items-center justify-between text-theme-xs text-gray-400 dark:text-gray-500">
+                  <span>{{ update.updated_by }}</span>
+                  <span>{{ update.updated_at }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
